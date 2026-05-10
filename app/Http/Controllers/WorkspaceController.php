@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Workspace;
+use App\Jobs\ProcessImageToAI;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+
 
 class WorkspaceController extends Controller
 {
     // GET /api/workspaces
     public function index(Request $request)
     {
-        // Dummy data untuk FE
         return response()->json([
             'success' => true,
             'message' => 'Data workspace diambil',
@@ -29,49 +32,88 @@ class WorkspaceController extends Controller
     }
 
     // POST /api/workspaces (Upload)
-    public function store(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|image|max:5120', // Max 5MB
-            'method' => 'required|string',
-            'name' => 'nullable|string'
+   public function store(Request $request)
+{
+    $request->validate([
+        'file'   => 'required|image|max:5120', // Max 5MB
+        'method' => 'required|string',
+        'name'   => 'nullable|string'
+    ]);
+
+    try {
+        DB::beginTransaction();
+
+        // 1. Upload ke Cloudinary via Storage Driver (v3.x)
+        $file = $request->file('file');
+        $path = $file->store('dicatatin_workspaces', 'cloudinary');
+        $uploadedFileUrl = Storage::disk('cloudinary')->url($path);
+
+        if (!$uploadedFileUrl) {
+            throw new \Exception('Upload ke Cloudinary gagal, URL tidak ditemukan.');
+        }
+
+        // 2. Simpan record di Database (status: processing)
+        $workspace = Workspace::create([
+            'user_id'   => $request->user()->id,
+            'name'      => $request->name ?? 'Untitled Note',
+            'method'    => $request->method,
+            'ai_status' => 'processing',
+            'image_url' => $uploadedFileUrl,
         ]);
 
-        $workspaceId = Str::uuid()->toString();
+        DB::commit();
 
-        // Nanti di sini logic upload Cloudinary dan dispatch Job
-        // ProcessImageToAI::dispatch($workspaceId, ...);
+        // 3. Dispatch Job ke Queue (background process)
+        // Kirim URL gambar, bukan file fisik (mencegah memory exhausted)
+        ProcessImageToAI::dispatch($workspace, $uploadedFileUrl);
 
+        // 4. Return instan ke Frontend (202 Accepted)
         return response()->json([
             'success' => true,
             'message' => 'Gambar diterima, AI sedang memproses...',
-            'data' => [
-                'id' => $workspaceId,
+            'data'    => [
+                'id'        => $workspace->id,
                 'ai_status' => 'processing'
             ],
             'errors' => null
         ], 202);
-    }
 
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'success' => false,
+            'message' => 'Gagal memproses gambar.',
+            'data'    => null,
+            'errors'  => ['server' => [$e->getMessage()]]
+        ], 500);
+    }
+}
     // GET /api/workspaces/{id} (Polling)
-    public function show($id)
+    public function show(string $id)
     {
-        // Mock Response: Simulasi seolah-olah sudah selesai diproses (completed)
-        // FE bisa merender canvas dari mock ini
         return response()->json([
             'success' => true,
             'message' => 'Detail workspace diambil',
-            'data' => [
-                'id' => $id,
-                'name' => 'Mock Catatan Biologi',
-                'method' => 'mind_map',
-                'ai_status' => 'completed',
-                'nodes' => [
-                    ['id' => '1', 'type' => 'default', 'position' => ['x' => 100, 'y' => 100], 'data' => ['label' => 'Sel']]
+            'data'    => [
+                'id'         => $id,
+                'name'       => 'Mock Catatan Biologi',
+                'method'     => 'mind_map',
+                'ai_status'  => 'completed',
+                'nodes'      => [
+                    [
+                        'id'       => '1',
+                        'type'     => 'default',
+                        'position' => ['x' => 100, 'y' => 100],
+                        'data'     => ['label' => 'Sel']
+                    ]
                 ],
-                'edges' => [],
+                'edges'      => [],
                 'flashcards' => [
-                    ['id' => 'fc1', 'question' => 'Apa itu sel?', 'answer' => 'Unit terkecil kehidupan']
+                    [
+                        'id'       => 'fc1',
+                        'question' => 'Apa itu sel?',
+                        'answer'   => 'Unit terkecil kehidupan'
+                    ]
                 ],
                 'created_at' => now()->toIso8601String(),
                 'updated_at' => now()->toIso8601String(),
@@ -83,30 +125,28 @@ class WorkspaceController extends Controller
     // PUT /api/workspaces/{id} (Auto-save)
     public function update(Request $request, $id)
     {
-        // Bypass update real DB untuk saat ini
         return response()->json([
             'success' => true,
             'message' => 'Workspace berhasil disimpan',
-            'data' => null,
-            'errors' => null
+            'data'    => null,
+            'errors'  => null
         ]);
     }
 
     // POST /api/workspaces/{id}/transform
-    public function transform(Request $request, $id)
+    public function transform(Request $request, string $id)
     {
         $request->validate([
             'new_method' => 'required|string'
         ]);
 
-        // Nanti dispatch Job Transform Method di sini
         // TransformWorkspaceAI::dispatch($id, $request->new_method);
 
         return response()->json([
             'success' => true,
             'message' => 'Transformasi sedang diproses...',
-            'data' => [
-                'id' => $id,
+            'data'    => [
+                'id'        => $id,
                 'ai_status' => 'processing'
             ],
             'errors' => null
