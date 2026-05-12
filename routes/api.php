@@ -22,3 +22,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/workspaces/{id}', [WorkspaceController::class, 'update']);
     Route::post('/workspaces/{id}/transform', [WorkspaceController::class, 'transform']);
 });
+
+Route::get('/health', function () {
+    return response()->json([
+        'success' => true,
+        'service' => 'be-dicatatin',
+        'status'  => 'ok',
+    ]);
+});
