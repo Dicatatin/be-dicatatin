@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use App\Jobs\TransformWorkspaceAI;
 use App\Http\Resources\WorkspaceResource;
-
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary; 
 class WorkspaceController extends Controller
 {
     // GET /api/workspaces
@@ -162,5 +162,30 @@ class WorkspaceController extends Controller
             ],
             'errors' => null
         ], 202);
+    }
+
+    // DELETE /api/workspaces/{id}
+    public function destroy(Request $request, string $id)
+    {
+        $workspace = Workspace::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
+
+        if ($workspace->image_url) {
+            $path = parse_url($workspace->image_url, PHP_URL_PATH);
+            $publicId = pathinfo($path, PATHINFO_FILENAME);
+            Cloudinary::uploadApi()->destroy($publicId);
+        }
+
+        // 2. Hapus data dari database
+        $workspace->delete();
+
+        // 3. Kembalikan response sukses
+        return response()->json([
+            'success' => true,
+            'message' => 'Workspace berhasil dihapus',
+            'data'    => null,
+            'errors'  => null
+        ]);
     }
 }
