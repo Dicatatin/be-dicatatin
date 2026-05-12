@@ -1,7 +1,6 @@
-# Menggunakan PHP 8.4 sesuai kebutuhan Laravel 12
 FROM php:8.4-cli
 
-# Install dependencies (termasuk libpq-dev untuk PostgreSQL & ca-certificates untuk SSL)
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -9,16 +8,30 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     ca-certificates \
     curl \
-    && docker-php-ext-install pdo_pgsql pdo_mysql zip
-
-# sertifikat SSL agar PHP bisa melakukan request HTTPS ke Cloudinary/FastAPI
-RUN update-ca-certificates
+    && docker-php-ext-install pdo_pgsql pdo_mysql zip \
+    && update-ca-certificates \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
+
+# Copy composer files dulu — layer caching supaya tidak install ulang tiap build
+COPY composer.json composer.lock ./
+
+# Install dependencies PHP — INI yang hilang sebelumnya
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+
+# Copy semua file project
 COPY . .
 
-EXPOSE 8000
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Generate autoload setelah semua file ada
+RUN composer dump-autoload --optimize
+
+EXPOSE ${PORT:-8000}
+
+CMD php artisan migrate --force && \
+    php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
