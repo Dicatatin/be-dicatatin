@@ -22,7 +22,7 @@ security:
 
 paths:
 
-  /register:
+  /auth/register:
     post:
       tags:
         - Auth
@@ -68,7 +68,7 @@ paths:
         '422':
           description: Validation error
 
-  /login:
+  /auth/login:
     post:
       tags:
         - Auth
@@ -105,7 +105,7 @@ paths:
         '401':
           description: Invalid credentials
 
-  /logout:
+  /auth/logout:
     post:
       tags:
         - Auth
