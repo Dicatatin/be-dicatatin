@@ -1,66 +1,121 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🚀 DICATAT.IN - Backend API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Repositori ini berisi *source code* Backend REST API untuk aplikasi **DICATAT.IN** (Ekosistem PROTEK). Dibangun menggunakan Laravel dan diorkestrasi secara penuh dengan Docker untuk memastikan konsistensi *environment* pengembangan lintas tim (Frontend, Backend, dan Machine Learning).
 
-## About Laravel
+API ini menangani otentikasi pengguna, manajemen *workspaces*, serta bertugas sebagai jembatan komunikasi *asynchronous* (melalui sistem Queue) dengan *service* AI/Machine Learning untuk memproses gambar catatan.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🛠️ Tech Stack Utama
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Komponen | Teknologi |
+|---|---|
+| **Framework** | Laravel (PHP) |
+| **Database** | PostgreSQL |
+| **Authentication** | Laravel Sanctum (Token-based) |
+| **Storage** | Cloudinary (Manajemen Aset Gambar) |
+| **API Documentation** | Swagger / OpenAPI 3.0 |
+| **Infrastructure** | Docker & Docker Compose |
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## ⚙️ Prasyarat (Prerequisites)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Sebelum memulai, pastikan perangkatmu sudah terinstal:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) *(Wajib menyala saat pengembangan)*
+- [Git](https://git-scm.com/)
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 🚀 Instalasi & Setup Lokal
 
-### Premium Partners
+Ikuti langkah-langkah berikut untuk menjalankan *server* secara lokal. Semua *service* (Backend, Database, Queue, dan ML) akan berjalan otomatis di dalam *container*.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### 1. Clone Repositori
 
-## Contributing
+```bash
+git clone <URL_REPO_BE_DICATATIN>
+cd be-dicatatin
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 2. Konfigurasi Environment (`.env`)
 
-## Code of Conduct
+Salin file konfigurasi bawaan dan sesuaikan nilainya:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+cp .env.example .env
+```
 
-## Security Vulnerabilities
+> ⚠️ **PENTING:** Buka file `.env` dan pastikan konfigurasi database mengarah ke nama *container* Docker, bukan `localhost`:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```env
+DB_CONNECTION=pgsql
+DB_HOST=db
+DB_PORT=5432
+DB_DATABASE=dicatatin_db
+DB_USERNAME=postgres
+DB_PASSWORD=password_rahasiamu
 
-## License
+# Konfigurasi Cloudinary
+CLOUDINARY_URL=cloudinary://API_KEY:API_SECRET@CLOUD_NAME
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 3. Eksekusi Docker Compose
+
+Jalankan perintah ini di dalam folder workspace utama (yang berisi `docker-compose.yml`):
+
+```bash
+docker compose up -d
+```
+
+> **Catatan:** Proses pertama kali akan memakan waktu sedikit lebih lama untuk membangun *image* dan mengunduh dependensi.
+
+### 4. Setup Database & Key Laravel
+
+Masuk ke dalam *container* backend untuk menjalankan migrasi dan *generate key*:
+
+```bash
+docker exec dicatatin-backend php artisan key:generate
+docker exec dicatatin-backend php artisan migrate
+```
+
+---
+
+## 📚 Dokumentasi API (Swagger)
+
+Aplikasi ini menggunakan antarmuka interaktif **Swagger UI** untuk memudahkan *testing* dan eksplorasi rute API. Setelah *container* berhasil menyala, buka browser dan akses:
+
+👉 **http://localhost:8000/docs**
+
+Di dalam Swagger, kamu bisa langsung mencoba endpoint otentikasi (`/auth/register`, `/auth/login`) dan menyalin **Bearer Token** yang didapat ke tombol **"Authorize"** 🔒 untuk mengakses endpoint terproteksi (seperti `/workspaces`).
+
+---
+
+## 🧑‍💻 Cheatsheet Perintah Terminal
+
+Berikut adalah beberapa perintah yang sering digunakan saat *debugging* atau mengembangkan fitur baru di dalam ekosistem Docker.
+
+**Melihat log error backend secara real-time:**
+
+```bash
+docker compose logs -f backend
+```
+
+**Restart hanya service backend** *(berguna jika ada proses yang "nyangkut")*:
+
+```bash
+docker compose restart backend
+```
+
+**Membersihkan cache total Laravel** *(wajib dilakukan jika mengubah file `.env`)*:
+
+```bash
+docker exec dicatatin-backend php artisan optimize:clear
+```
+
+**Masuk ke Database Tinker** *(mengecek data via CLI)*:
+
+```bash
+docker exec -it dicatatin-backend php artisan tinker
+```
