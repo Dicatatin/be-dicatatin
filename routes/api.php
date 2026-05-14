@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/workspaces/{id}', [WorkspaceController::class, 'update']);
     Route::post('/workspaces/{id}/transform', [WorkspaceController::class, 'transform']);
     Route::delete('/workspaces/{id}', [WorkspaceController::class, 'destroy']);
+    Route::post('/workspaces/{id}/flashcards', [WorkspaceController::class, 'regenerateFlashcards']);
 });
 
 Route::get('/health', function () {

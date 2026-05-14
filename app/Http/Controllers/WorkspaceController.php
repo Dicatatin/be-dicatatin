@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use App\Jobs\TransformWorkspaceAI;
 use App\Http\Resources\WorkspaceResource;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary; 
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 class WorkspaceController extends Controller
 {
     // GET /api/workspaces
@@ -188,4 +188,37 @@ class WorkspaceController extends Controller
             'errors'  => null
         ]);
     }
+
+    // POST /api/workspaces/{id}/flashcards
+    public function regenerateFlashcards(Request $request, string $id)
+    {
+        $workspace = Workspace::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
+
+        // Pastikan catatan sudah memiliki clean_text
+        if (!$workspace->clean_text) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Catatan ini belum memiliki teks yang diekstrak.',
+            ], 400);
+        }
+
+        // Ubah status agar frontend tahu sedang diproses
+        $workspace->update(['ai_status' => 'processing']);
+
+        // Lempar ke Queue
+        \App\Jobs\RegenerateFlashcardsAI::dispatch($workspace);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Permintaan regenerasi flashcard sedang diproses AI...',
+            'data' => [
+                'id' => $workspace->id,
+                'ai_status' => 'processing'
+            ],
+            'errors' => null
+        ], 202);
+    }
 }
+
