@@ -533,6 +533,8 @@ paths:
 
                 errors: null
 
+<<<<<<< HEAD
+=======
     delete:
       tags:
         - Workspaces
@@ -566,6 +568,7 @@ paths:
                 message: Workspace berhasil dihapus
                 data: null
                 errors: null
+>>>>>>> 592ff3401bf3644ed35b074974f197cfd0b431c9
 
   /workspaces/{id}/transform:
 
@@ -624,6 +627,40 @@ paths:
                   ai_status: processing
 
                 errors: null
+<<<<<<< HEAD
+  /workspaces/{id}/flashcards:
+    post:
+      tags:
+        - Workspaces
+      summary: Regenerate Flashcards
+      description: Meminta AI untuk membuat ulang set flashcard berdasarkan teks yang sudah diekstrak tanpa mengubah mind map/catatan utamanya.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '202':
+          description: Regenerasi diproses
+          content:
+            application/json:
+              example:
+                success: true
+                message: Permintaan regenerasi flashcard sedang diproses AI...
+                data:
+                  id: uuid-1234
+                  ai_status: processing
+                errors: null
+
+    delete:
+      tags:
+        - Workspaces
+
+      summary: Delete Workspace
+
+      description: Menghapus workspace beserta seluruh datanya secara permanen.
+=======
 
   /workspaces/{id}/flashcards:
 
@@ -634,6 +671,7 @@ paths:
       summary: Regenerate Flashcards
 
       description: Meminta AI untuk membuat ulang set flashcard berdasarkan teks yang sudah diekstrak tanpa mengubah mind map/catatan utamanya.
+>>>>>>> 592ff3401bf3644ed35b074974f197cfd0b431c9
 
       parameters:
         - in: path
@@ -646,21 +684,34 @@ paths:
 
       responses:
 
+<<<<<<< HEAD
+        '200':
+          description: Workspace berhasil dihapus
+
+          content:
+            application/json:
+=======
         '202':
           description: Regenerasi diproses
 
           content:
             application/json:
 
+>>>>>>> 592ff3401bf3644ed35b074974f197cfd0b431c9
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
 
               example:
                 success: true
+<<<<<<< HEAD
+                message: Workspace berhasil dihapus
+                data: null
+=======
                 message: Permintaan regenerasi flashcard sedang diproses AI...
 
                 data:
                   id: uuid-1234
                   ai_status: processing
 
+>>>>>>> 592ff3401bf3644ed35b074974f197cfd0b431c9
                 errors: null

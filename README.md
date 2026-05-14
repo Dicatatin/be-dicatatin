@@ -2,7 +2,7 @@
 
 Repositori ini berisi *source code* Backend REST API untuk aplikasi **DICATAT.IN** (Ekosistem PROTEK). Dibangun menggunakan Laravel dan diorkestrasi secara penuh dengan Docker untuk memastikan konsistensi *environment* pengembangan lintas tim (Frontend, Backend, dan Machine Learning).
 
-API ini menangani otentikasi pengguna, manajemen *workspaces*, serta bertugas sebagai jembatan komunikasi *asynchronous* (melalui sistem Queue) dengan *service* AI/Machine Learning untuk memproses gambar catatan.
+API ini menangani otentikasi pengguna, manajemen *workspaces*, serta bertugas sebagai jembatan komunikasi *asynchronous* (melalui sistem Queue) dengan *service* AI/Machine Learning untuk memproses gambar catatan. Untuk dokumentai lengkap bisa dicek melalui swagger nya
 
 ---
 
