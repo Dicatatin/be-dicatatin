@@ -18,13 +18,13 @@ class WorkspaceResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'method' => $this->method,
-            // Data nodes, edges, & flashcards otomatis ter-decode karena $casts di Model
+            'ai_status' => $this->ai_status, 
+            'clean_text' => $this->clean_text,
             'nodes' => $this->nodes,
             'edges' => $this->edges,
             'flashcards' => $this->flashcards,
-            // Format camelCase untuk FE dan ISO String untuk waktu
-            'createdAt' => $this->created_at?->toISOString(),
-            'updatedAt' => $this->updated_at?->toISOString(),
+            'createdAt' => $this->created_at,
+            'updatedAt' => $this->updated_at,
         ];
     }
 
