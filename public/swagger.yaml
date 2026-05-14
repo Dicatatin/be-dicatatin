@@ -507,38 +507,6 @@ paths:
 
                 errors: null
 
-    delete:
-      tags:
-        - Workspaces
-
-      summary: Delete Workspace
-
-      description: Menghapus workspace beserta seluruh datanya secara permanen.
-
-      parameters:
-        - in: path
-          name: id
-          required: true
-
-          schema:
-            type: string
-            format: uuid
-
-      responses:
-
-        '200':
-          description: Workspace berhasil dihapus
-
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessResponse'
-
-              example:
-                success: true
-                message: Workspace berhasil dihapus
-                data: null
-                errors: null
 
   /workspaces/{id}/transform:
 
@@ -594,4 +562,61 @@ paths:
                   id: uuid-1234
                   ai_status: processing
 
+                errors: null
+  /workspaces/{id}/flashcards:
+    post:
+      tags:
+        - Workspaces
+      summary: Regenerate Flashcards
+      description: Meminta AI untuk membuat ulang set flashcard berdasarkan teks yang sudah diekstrak tanpa mengubah mind map/catatan utamanya.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '202':
+          description: Regenerasi diproses
+          content:
+            application/json:
+              example:
+                success: true
+                message: Permintaan regenerasi flashcard sedang diproses AI...
+                data:
+                  id: uuid-1234
+                  ai_status: processing
+                errors: null
+
+    delete:
+      tags:
+        - Workspaces
+
+      summary: Delete Workspace
+
+      description: Menghapus workspace beserta seluruh datanya secara permanen.
+
+      parameters:
+        - in: path
+          name: id
+          required: true
+
+          schema:
+            type: string
+            format: uuid
+
+      responses:
+
+        '200':
+          description: Workspace berhasil dihapus
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+              example:
+                success: true
+                message: Workspace berhasil dihapus
+                data: null
                 errors: null
