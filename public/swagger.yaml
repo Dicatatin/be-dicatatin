@@ -8,12 +8,10 @@ info:
 servers:
   - url: https://be-dicatatin-production.up.railway.app/api
     description: Production Server (Railway)
-
   - url: http://localhost:8000/api
     description: Local Development Server
 
 components:
-
   securitySchemes:
     sanctumAuth:
       type: http
@@ -21,23 +19,18 @@ components:
       description: Gunakan Bearer Token dari endpoint login
 
   schemas:
-
     SuccessResponse:
       type: object
-
       properties:
         success:
           type: boolean
           example: true
-
         message:
           type: string
           example: Request berhasil
-
         data:
           type: object
           nullable: true
-
         errors:
           type: object
           nullable: true
@@ -45,522 +38,385 @@ components:
 
     ErrorResponse:
       type: object
-
       properties:
         success:
           type: boolean
           example: false
-
         message:
           type: string
           example: Terjadi kesalahan
-
         data:
           type: object
           nullable: true
           example: null
-
         errors:
           type: object
           nullable: true
 
     Workspace:
       type: object
-
       properties:
         id:
           type: string
           format: uuid
           example: uuid-1234
-
         name:
           type: string
           example: Catatan Biologi
-
         method:
           type: string
           example: mind_map
-
         ai_status:
           type: string
           example: processing
-
+        clean_text:
+          type: string
+          nullable: true
+          example: "Fotosintesis adalah proses tumbuhan mengubah sinar matahari menjadi makanan..."
         nodes:
           type: array
-
+          nullable: true
           items:
             type: object
-
         edges:
           type: array
-
+          nullable: true
           items:
             type: object
-
         flashcards:
           type: array
-
+          nullable: true
           items:
             type: object
-
-        created_at:
+        createdAt:
           type: string
           format: date-time
-          example: 2026-05-11T13:41:23.000000Z
-
-        updated_at:
+          example: 2026-05-14T09:08:59.000000Z
+        updatedAt:
           type: string
           format: date-time
-          example: 2026-05-11T20:43:16.000000Z
+          example: 2026-05-14T09:09:47.000000Z
 
 security:
   - sanctumAuth: []
 
 paths:
-
   /auth/register:
-
     post:
       tags:
         - Auth
-
       summary: Register a new user
-
       description: Create a new user account and return access token.
-
       security: []
-
       requestBody:
         required: true
-
         content:
           application/json:
-
             schema:
               type: object
-
               required:
                 - name
                 - email
                 - password
                 - password_confirmation
-
               properties:
-
                 name:
                   type: string
                   example: Faris Andi
-
                 email:
                   type: string
                   format: email
                   example: faris@example.com
-
                 password:
                   type: string
                   format: password
                   example: secret123
-
                 password_confirmation:
                   type: string
                   format: password
                   example: secret123
-
       responses:
-
         '201':
           description: User successfully registered
-
           content:
             application/json:
-
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
-
               example:
                 success: true
                 message: Register berhasil
-
                 data:
                   token: 1|sanctum_token
-
                 errors: null
-
         '422':
           description: Validation error
-
           content:
             application/json:
-
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
   /auth/login:
-
     post:
       tags:
         - Auth
-
       summary: Login user
-
       description: Authenticate user and return Sanctum token.
-
       security: []
-
       requestBody:
         required: true
-
         content:
           application/json:
-
             schema:
               type: object
-
               required:
                 - email
                 - password
-
               properties:
-
                 email:
                   type: string
                   format: email
                   example: faris@example.com
-
                 password:
                   type: string
                   format: password
                   example: secret123
-
       responses:
-
         '200':
           description: Successfully authenticated
-
           content:
             application/json:
-
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
-
               example:
                 success: true
                 message: Login berhasil
-
                 data:
                   token: 1|sanctum_token
-
                 errors: null
-
         '401':
           description: Invalid credentials
-
           content:
             application/json:
-
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
   /auth/logout:
-
     post:
       tags:
         - Auth
-
       summary: Logout user
-
       description: Revoke current access token.
-
       responses:
-
         '200':
           description: Successfully logged out
-
           content:
             application/json:
-
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
-
               example:
                 success: true
                 message: Logout berhasil
                 data: null
                 errors: null
-
         '401':
           description: Unauthenticated
-
           content:
             application/json:
-
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
   /workspaces:
-
     get:
       tags:
         - Workspaces
-
       summary: Get All Workspaces
-
       description: Mengambil seluruh workspace milik user.
-
       responses:
-
         '200':
           description: Berhasil mengambil data
-
           content:
             application/json:
-
               schema:
                 type: object
-
                 properties:
                   success:
                     type: boolean
-
                   message:
                     type: string
-
                   data:
                     type: array
-
                     items:
                       $ref: '#/components/schemas/Workspace'
-
                   errors:
                     type: object
                     nullable: true
-
               example:
                 success: true
                 message: Data workspace berhasil diambil
-
                 data:
                   - id: uuid-1234
                     name: Catatan Biologi
                     method: mind_map
-                    created_at: 2026-05-11T13:41:23.000000Z
-                    updated_at: 2026-05-11T13:41:23.000000Z
-
+                    ai_status: completed
+                    clean_text: "Teks catatan biologi..."
+                    nodes: []
+                    edges: []
+                    flashcards: []
+                    createdAt: 2026-05-14T09:08:59.000000Z
+                    updatedAt: 2026-05-14T09:09:47.000000Z
                 errors: null
 
     post:
       tags:
         - Workspaces
-
       summary: Create New Workspace
-
       description: Upload gambar catatan untuk diproses AI secara background.
-
       requestBody:
         required: true
-
         content:
           multipart/form-data:
-
             schema:
               type: object
-
               required:
                 - file
                 - method
-
               properties:
-
                 file:
                   type: string
                   format: binary
-
                 method:
                   type: string
                   example: mind_map
-
                 name:
                   type: string
                   example: Untitled
-
       responses:
-
         '202':
           description: AI processing started
-
           content:
             application/json:
-
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
-
               example:
                 success: true
                 message: Gambar diterima, AI sedang memproses...
-
                 data:
                   id: uuid-1234
                   ai_status: processing
-
                 errors: null
 
   /workspaces/{id}:
-
     get:
       tags:
         - Workspaces
-
       summary: Get Workspace Detail
-
       description: Endpoint polling untuk mendapatkan hasil AI.
-
       parameters:
         - in: path
           name: id
           required: true
-
           schema:
             type: string
             format: uuid
-
       responses:
-
         '200':
           description: Success
-
           content:
             application/json:
-
               schema:
                 type: object
-
                 properties:
                   success:
                     type: boolean
-
                   message:
                     type: string
-
                   data:
                     $ref: '#/components/schemas/Workspace'
-
                   errors:
                     type: object
                     nullable: true
-
               example:
                 success: true
                 message: Detail workspace diambil
-
                 data:
-                  id: uuid-1234
-                  name: Catatan Biologi
-                  method: mind_map
-                  nodes: []
-                  edges: []
-                  flashcards: []
-                  created_at: 2026-05-11T13:41:23.000000Z
-                  updated_at: 2026-05-11T20:43:16.000000Z
-
+                  id: 019e25bf-1189-73e6-9758-a74ef8195be1
+                  name: Untitled
+                  method: cornell
+                  ai_status: processing
+                  clean_text: null
+                  nodes: null
+                  edges: null
+                  flashcards: null
+                  createdAt: 2026-05-14T09:08:59.000000Z
+                  updatedAt: 2026-05-14T09:09:47.000000Z
                 errors: null
 
     put:
       tags:
         - Workspaces
-
       summary: Update Workspace
-
       description: Auto-save perubahan workspace.
-
       parameters:
         - in: path
           name: id
           required: true
-
           schema:
             type: string
             format: uuid
-
       requestBody:
         required: true
-
         content:
           application/json:
-
             schema:
               type: object
-
               properties:
-
                 name:
                   type: string
-
                 nodes:
                   type: array
-
                   items:
                     type: object
-
                 edges:
                   type: array
-
                   items:
                     type: object
-
                 flashcards:
                   type: array
-
                   items:
                     type: object
-
       responses:
-
         '200':
           description: Workspace berhasil disimpan
-
           content:
             application/json:
-
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
-
               example:
                 success: true
                 message: Workspace berhasil disimpan
-
                 data:
-                  updated_at: 2026-05-11T21:00:00.000000Z
-
+                  updatedAt: 2026-05-14T21:00:00.000000Z
                 errors: null
 
     delete:
       tags:
         - Workspaces
-
       summary: Delete Workspace
-
       description: Menghapus workspace beserta seluruh datanya secara permanen.
-
       parameters:
         - in: path
           name: id
           required: true
-
           schema:
             type: string
             format: uuid
-
       responses:
-
         '200':
           description: Workspace berhasil dihapus
-
           content:
             application/json:
-
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
-
               example:
                 success: true
                 message: Workspace berhasil dihapus
@@ -568,101 +424,71 @@ paths:
                 errors: null
 
   /workspaces/{id}/transform:
-
     post:
       tags:
         - Workspaces
-
       summary: Transform Workspace Method
-
       description: Mengubah metode catatan dan memproses ulang AI.
-
       parameters:
         - in: path
           name: id
           required: true
-
           schema:
             type: string
             format: uuid
-
       requestBody:
         required: true
-
         content:
           application/json:
-
             schema:
               type: object
-
               required:
                 - new_method
-
               properties:
-
                 new_method:
                   type: string
                   example: cornell
-
       responses:
-
         '202':
           description: Transform processing started
-
           content:
             application/json:
-
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
-
               example:
                 success: true
                 message: Transformasi sedang diproses...
-
                 data:
                   id: uuid-1234
                   ai_status: processing
-
                 errors: null
 
   /workspaces/{id}/flashcards:
-
     post:
       tags:
         - Workspaces
-
       summary: Regenerate Flashcards
-
       description: >
         Meminta AI untuk membuat ulang set flashcard berdasarkan teks yang sudah
         diekstrak tanpa mengubah mind map atau catatan utamanya.
-
       parameters:
         - in: path
           name: id
           required: true
-
           schema:
             type: string
             format: uuid
-
       responses:
-
         '202':
           description: Regenerasi diproses
-
           content:
             application/json:
-
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
-
               example:
                 success: true
                 message: Permintaan regenerasi flashcard sedang diproses AI...
-
                 data:
                   id: uuid-1234
                   ai_status: processing
-
                 errors: null
