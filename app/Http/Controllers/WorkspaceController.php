@@ -95,8 +95,6 @@ class WorkspaceController extends Controller
             ->where('user_id', $request->user()->id)
             ->firstOrFail();
 
-        // Kembalikan data melalui Resource agar otomatis terformat menjadi camelCase
-        // additional() digunakan untuk menyuntikkan properti success, message, errors di luar 'data'
         return (new WorkspaceResource($workspace))->additional([
             'success' => true,
             'message' => 'Detail workspace diambil',
@@ -207,7 +205,7 @@ class WorkspaceController extends Controller
         // Ubah status agar frontend tahu sedang diproses
         $workspace->update(['ai_status' => 'processing']);
 
-        // Lempar ke Queue
+        // Lempar ke Queue (INI BARIS YANG HILANG!)
         \App\Jobs\RegenerateFlashcardsAI::dispatch($workspace);
 
         return response()->json([
