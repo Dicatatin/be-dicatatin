@@ -23,8 +23,10 @@ class RegenerateFlashcardsAI implements ShouldQueue
         Log::info("Memulai regenerasi Flashcard untuk Workspace ID: {$this->workspace->id}");
 
         try {
-            // Hit ke endpoint /flashcard FastAPI sesuai gambar Swagger-mu
-            $response = Http::timeout(120)->post('http://dicatatin-ml:8000/flashcard', [
+            // Gunakan URL Public Railway ML-mu
+            $mlUrl = 'https://ml-dicatatin-production.up.railway.app/flashcard';
+
+            $response = Http::timeout(120)->post($mlUrl, [
                 'clean_text' => $this->workspace->clean_text,
             ]);
 
