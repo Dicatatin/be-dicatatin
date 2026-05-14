@@ -633,7 +633,9 @@ paths:
 
       summary: Regenerate Flashcards
 
-      description: Meminta AI untuk membuat ulang set flashcard berdasarkan teks yang sudah diekstrak tanpa mengubah mind map/catatan utamanya.
+      description: >
+        Meminta AI untuk membuat ulang set flashcard berdasarkan teks yang sudah
+        diekstrak tanpa mengubah mind map atau catatan utamanya.
 
       parameters:
         - in: path
