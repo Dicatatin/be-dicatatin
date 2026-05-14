@@ -24,8 +24,11 @@ class TransformWorkspaceAI implements ShouldQueue
         Log::info("Memulai transformasi AI untuk Workspace ID: {$this->workspace->id} ke metode {$this->newMethod}");
 
         try {
+            // Gunakan URL Public Railway ML-mu
+            $mlUrl = 'https://ml-dicatatin-production.up.railway.app/transform';
+
             // Hit ke endpoint /transform FastAPI dengan JSON payload
-            $response = Http::timeout(120)->post('http://dicatatin-ml:8000/transform', [
+            $response = Http::timeout(120)->post($mlUrl, [
                 'clean_text' => $this->workspace->clean_text,
                 'new_method' => $this->newMethod,
             ]);
