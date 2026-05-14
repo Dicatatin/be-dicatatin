@@ -24,6 +24,7 @@ components:
 
     SuccessResponse:
       type: object
+
       properties:
         success:
           type: boolean
@@ -44,6 +45,7 @@ components:
 
     ErrorResponse:
       type: object
+
       properties:
         success:
           type: boolean
@@ -85,16 +87,19 @@ components:
 
         nodes:
           type: array
+
           items:
             type: object
 
         edges:
           type: array
+
           items:
             type: object
 
         flashcards:
           type: array
+
           items:
             type: object
 
@@ -130,6 +135,7 @@ paths:
 
         content:
           application/json:
+
             schema:
               type: object
 
@@ -167,14 +173,17 @@ paths:
 
           content:
             application/json:
+
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
 
               example:
                 success: true
                 message: Register berhasil
+
                 data:
                   token: 1|sanctum_token
+
                 errors: null
 
         '422':
@@ -182,6 +191,7 @@ paths:
 
           content:
             application/json:
+
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
@@ -202,6 +212,7 @@ paths:
 
         content:
           application/json:
+
             schema:
               type: object
 
@@ -228,14 +239,17 @@ paths:
 
           content:
             application/json:
+
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
 
               example:
                 success: true
                 message: Login berhasil
+
                 data:
                   token: 1|sanctum_token
+
                 errors: null
 
         '401':
@@ -243,6 +257,7 @@ paths:
 
           content:
             application/json:
+
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
@@ -263,6 +278,7 @@ paths:
 
           content:
             application/json:
+
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
 
@@ -277,6 +293,7 @@ paths:
 
           content:
             application/json:
+
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
@@ -297,6 +314,7 @@ paths:
 
           content:
             application/json:
+
               schema:
                 type: object
 
@@ -343,6 +361,7 @@ paths:
 
         content:
           multipart/form-data:
+
             schema:
               type: object
 
@@ -371,6 +390,7 @@ paths:
 
           content:
             application/json:
+
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
 
@@ -410,6 +430,7 @@ paths:
 
           content:
             application/json:
+
               schema:
                 type: object
 
@@ -465,6 +486,7 @@ paths:
 
         content:
           application/json:
+
             schema:
               type: object
 
@@ -475,16 +497,19 @@ paths:
 
                 nodes:
                   type: array
+
                   items:
                     type: object
 
                 edges:
                   type: array
+
                   items:
                     type: object
 
                 flashcards:
                   type: array
+
                   items:
                     type: object
 
@@ -495,6 +520,7 @@ paths:
 
           content:
             application/json:
+
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
 
@@ -505,87 +531,6 @@ paths:
                 data:
                   updated_at: 2026-05-11T21:00:00.000000Z
 
-                errors: null
-
-
-  /workspaces/{id}/transform:
-
-    post:
-      tags:
-        - Workspaces
-
-      summary: Transform Workspace Method
-
-      description: Mengubah metode catatan dan memproses ulang AI.
-
-      parameters:
-        - in: path
-          name: id
-          required: true
-
-          schema:
-            type: string
-            format: uuid
-
-      requestBody:
-        required: true
-
-        content:
-          application/json:
-            schema:
-              type: object
-
-              required:
-                - new_method
-
-              properties:
-
-                new_method:
-                  type: string
-                  example: cornell
-
-      responses:
-
-        '202':
-          description: Transform processing started
-
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessResponse'
-
-              example:
-                success: true
-                message: Transformasi sedang diproses...
-
-                data:
-                  id: uuid-1234
-                  ai_status: processing
-
-                errors: null
-  /workspaces/{id}/flashcards:
-    post:
-      tags:
-        - Workspaces
-      summary: Regenerate Flashcards
-      description: Meminta AI untuk membuat ulang set flashcard berdasarkan teks yang sudah diekstrak tanpa mengubah mind map/catatan utamanya.
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      responses:
-        '202':
-          description: Regenerasi diproses
-          content:
-            application/json:
-              example:
-                success: true
-                message: Permintaan regenerasi flashcard sedang diproses AI...
-                data:
-                  id: uuid-1234
-                  ai_status: processing
                 errors: null
 
     delete:
@@ -612,6 +557,7 @@ paths:
 
           content:
             application/json:
+
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
 
@@ -619,4 +565,102 @@ paths:
                 success: true
                 message: Workspace berhasil dihapus
                 data: null
+                errors: null
+
+  /workspaces/{id}/transform:
+
+    post:
+      tags:
+        - Workspaces
+
+      summary: Transform Workspace Method
+
+      description: Mengubah metode catatan dan memproses ulang AI.
+
+      parameters:
+        - in: path
+          name: id
+          required: true
+
+          schema:
+            type: string
+            format: uuid
+
+      requestBody:
+        required: true
+
+        content:
+          application/json:
+
+            schema:
+              type: object
+
+              required:
+                - new_method
+
+              properties:
+
+                new_method:
+                  type: string
+                  example: cornell
+
+      responses:
+
+        '202':
+          description: Transform processing started
+
+          content:
+            application/json:
+
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+              example:
+                success: true
+                message: Transformasi sedang diproses...
+
+                data:
+                  id: uuid-1234
+                  ai_status: processing
+
+                errors: null
+
+  /workspaces/{id}/flashcards:
+
+    post:
+      tags:
+        - Workspaces
+
+      summary: Regenerate Flashcards
+
+      description: Meminta AI untuk membuat ulang set flashcard berdasarkan teks yang sudah diekstrak tanpa mengubah mind map/catatan utamanya.
+
+      parameters:
+        - in: path
+          name: id
+          required: true
+
+          schema:
+            type: string
+            format: uuid
+
+      responses:
+
+        '202':
+          description: Regenerasi diproses
+
+          content:
+            application/json:
+
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+              example:
+                success: true
+                message: Permintaan regenerasi flashcard sedang diproses AI...
+
+                data:
+                  id: uuid-1234
+                  ai_status: processing
+
                 errors: null
