@@ -24,7 +24,9 @@ class RegenerateFlashcardsAI implements ShouldQueue
 
         try {
             // Gunakan URL Public Railway ML-mu
-            $mlUrl = 'https://ml-dicatatin-production.up.railway.app/flashcard';
+            // $mlUrl = 'https://ml-dicatatin-production.up.railway.app/flashcard';
+            $baseUrl = env('ML_API_URL', 'http://dicatatin-ml:8000');
+            $mlUrl = $baseUrl . '/flashcard';
 
             $response = Http::timeout(120)->post($mlUrl, [
                 'clean_text' => $this->workspace->clean_text,
