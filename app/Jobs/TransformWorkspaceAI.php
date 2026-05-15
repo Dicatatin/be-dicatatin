@@ -25,7 +25,9 @@ class TransformWorkspaceAI implements ShouldQueue
 
         try {
             // Gunakan URL Public Railway ML-mu
-            $mlUrl = 'https://ml-dicatatin-production.up.railway.app/transform';
+            // $mlUrl = 'https://ml-dicatatin-production.up.railway.app/transform';
+            $baseUrl = env('ML_API_URL', 'http://dicatatin-ml:8000');
+            $mlUrl = $baseUrl . '/transform';
 
             // Hit ke endpoint /transform FastAPI dengan JSON payload
             $response = Http::timeout(120)->post($mlUrl, [

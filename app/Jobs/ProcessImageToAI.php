@@ -25,13 +25,26 @@ class ProcessImageToAI implements ShouldQueue
         Log::info("Memulai proses AI untuk Workspace ID: {$this->workspace->id}");
 
         try {
-            // Ganti URL ini dengan Public Domain ML kamu dari Railway!
-            $mlUrl = 'https://ml-dicatatin-production.up.railway.app/process';
+            // 1. Siapkan URL ML yang benar (dinamis dari .env)
+            $baseUrl = env('ML_API_URL', 'http://dicatatin-ml:8000');
+            $mlUrl = $baseUrl . '/process';
 
-            $response = Http::timeout(120)->post($mlUrl, [
-                'image_url' => $this->imageUrl, // Kirim string URL saja
-                'method'    => $this->workspace->method,
-            ]);
+            // 2. Ambil file fisik gambar dari Cloudinary
+            $imageResponse = Http::get($this->imageUrl);
+
+            if (!$imageResponse->successful()) {
+                throw new \Exception("Gagal mengunduh gambar dari Cloudinary. Status: " . $imageResponse->status());
+            }
+
+            $imageContent = $imageResponse->body();
+            $filename = basename(parse_url($this->imageUrl, PHP_URL_PATH)) ?: 'upload.jpg';
+
+            // 3. Kirim ke FastAPI sebagai FILE FISIK (multipart/form-data)
+            $response = Http::timeout(120)
+                ->attach('file', $imageContent, $filename)
+                ->post($mlUrl, [
+                    'method' => $this->workspace->method,
+                ]);
 
             if ($response->successful()) {
                 $aiData = $response->json();
@@ -44,14 +57,16 @@ class ProcessImageToAI implements ShouldQueue
                     'flashcards' => $resultData['flashcards'] ?? null,
                     'clean_text' => $resultData['clean_text'] ?? null,
                 ]);
+
                 Log::info("Sukses memproses AI untuk Workspace ID: {$this->workspace->id}");
             } else {
                 $this->workspace->update(['ai_status' => 'failed']);
                 Log::error("ML Error: " . $response->body());
             }
+
         } catch (\Exception $e) {
             $this->workspace->update(['ai_status' => 'failed']);
-            Log::error("Gagal koneksi ke ML: " . $e->getMessage());
+            Log::error("Gagal menghubungi FastAPI: " . $e->getMessage());
         }
     }
 }
