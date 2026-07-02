@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\WorkspaceController;
+use App\Http\Controllers\HeroSectionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+
 
 
 
@@ -32,3 +34,13 @@ Route::get('/health', function () {
         'status'  => 'ok',
     ]);
 });
+
+// ─── Public: Landing Page ────────────────────────────────────────────────────
+Route::get('/landing/hero', [HeroSectionController::class, 'show']);
+
+// ─── Admin: CMS Hero Section (auth:sanctum + admin role) ─────────────────────
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+    Route::put('/landing/hero', [HeroSectionController::class, 'update']);
+    Route::post('/landing/hero/reset', [HeroSectionController::class, 'reset']);
+});
+
