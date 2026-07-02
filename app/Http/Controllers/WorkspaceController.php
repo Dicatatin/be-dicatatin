@@ -201,10 +201,8 @@ class WorkspaceController extends Controller
             ], 400);
         }
 
-        // Ubah status agar frontend tahu sedang diproses
         $workspace->update(['ai_status' => 'processing']);
 
-        // Lempar ke Queue (INI BARIS YANG HILANG!)
         \App\Jobs\RegenerateFlashcardsAI::dispatch($workspace);
 
         return response()->json([
