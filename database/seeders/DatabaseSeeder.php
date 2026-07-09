@@ -16,17 +16,21 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         // Admin User
-        User::factory()->create([
+        User::forceCreate([
             'name' => 'Admin Dicatatin',
             'email' => 'admin@example.com',
             'password' => \Illuminate\Support\Facades\Hash::make('password123'),
             'role' => 'admin',
+            'email_verified_at' => now(),
         ]);
 
         // Regular User
-        User::factory()->create([
+        User::forceCreate([
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'password' => \Illuminate\Support\Facades\Hash::make('password123'),
+            'role' => 'user',
+            'email_verified_at' => now(),
         ]);
     }
 }
