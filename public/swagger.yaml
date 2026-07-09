@@ -6,10 +6,10 @@ info:
   description: API Documentation for Dicatat.in Backend (Laravel Sanctum Auth)
 
 servers:
-  - url: https://be-dicatatin-production.up.railway.app/api
-    description: Production Server (Railway)
   - url: http://localhost:8000/api
     description: Local Development Server
+  - url: https://be-dicatatin-production.up.railway.app/api
+    description: Production Server (Railway)
 
 components:
   securitySchemes:
